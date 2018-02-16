@@ -17,4 +17,6 @@
 
       check on http://localhost:3000/
 
-4. 
+4. Create the POST
+
+      http://localhost:3000/entry
