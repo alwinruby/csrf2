@@ -1,12 +1,21 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const csurf = require('csurf');
+const cookieParser = require('cookie-parser');
 
 const PORT = process.env.PORT || 3000;
 const app = express();
 
+const csrfMiddleware = csurf({
+  cookie: true
+});
+
 app.use(bodyParser.urlencoded({
   extended: true
 }));
+
+app.use(cookieParser());
+app.use(csrfMiddleware);
 
 app.get('/', (req, res) => {
   res.send(`
@@ -17,15 +26,17 @@ app.get('/', (req, res) => {
         <input id="message" name="message" type="text" />
       </div>
       <input type="submit" value="Submit" />
+      <input type="hidden" name="_csrf" value="${req.csrfToken()}" />
     </form>
   `);
 });
 
 app.post('/entry', (req, res) => {
-  console.log(`Message received: ${req.body.message}`);
-  res.send(`Message received: ${req.body.message}`);
+  console.log('Message received: ${req.body.message}');
+  // res.send(`Message received: ${req.body.message}`);
+  res.send('CSRF token used: ${req.body._csrf}, Message received: ${req.body.message}');
 });
 
 app.listen(PORT, () => {
-  console.log(`Listening on http://localhost:${PORT}`);
+  console.log('Listening on http://localhost:${PORT}');
 });
